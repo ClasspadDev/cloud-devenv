@@ -3,7 +3,7 @@ FROM debian:bullseye-slim as base
 # ENV PREFIX "/opt/cross"
 
 ENV PATH /opt/cross/bin:$PATH
-ENV SDK_DIR /opt/cross/hollyhock-2/sdk
+ENV SDK_DIR /opt/cross/hollyhock-3/sdk
 
 # TODO: maybe put the build stuff into a separate "prereq" image and publish a "clean" version without GCC source and stuff,
 # but it could be helpful is some wanted to add some lib into it so dunno ...
@@ -84,7 +84,7 @@ RUN make install
 # TODO: Install newlib and build it
 
 # version=1.14.0
-# prefix=~/cross/src/hollyhock-2/sdk/newlib
+# prefix=~/cross/src/hollyhock-3/sdk/newlib
 # jobs=`nproc 2> /dev/null || echo 1`
 # wget ftp://sourceware.org/pub/newlib/newlib-${version}.tar.gz
 # tar xzfv newlib-${version}.tar.gz
@@ -108,7 +108,7 @@ RUN make install
 FROM debian:bullseye-slim
 
 ENV USERNAME="dev"
-ENV SDK_DIR=/opt/cross/hollyhock-2/sdk
+ENV SDK_DIR=/opt/cross/hollyhock-3/sdk
 
 
 # COPY --from=binutils /opt/cross/ /opt/cross/
@@ -118,8 +118,8 @@ RUN apt-get -qq update && apt-get -qqy install make libmpc3 sudo git && apt-get 
 
 # Clone and make SDK
 WORKDIR /opt/cross/
-RUN git clone https://github.com/SnailMath/hollyhock-2.git
-WORKDIR /opt/cross/hollyhock-2/sdk
+RUN git clone https://github.com/ClasspadDev/hollyhock-3.git
+WORKDIR /opt/cross/hollyhock-3/sdk
 RUN make -j$(nproc)
 
 # TODO: Install doxygen and build docs?
@@ -142,8 +142,8 @@ RUN make -j$(nproc)
 USER root
 
 # Fixing some files
-RUN mkdir /opt/cross/hollyhock-2/sdk/newlib/
-RUN ln -s /usr/local/sh-elf/ /opt/cross/hollyhock-2/sdk/newlib/sh-elf
+RUN mkdir /opt/cross/hollyhock-3/sdk/newlib/
+RUN ln -s /usr/local/sh-elf/ /opt/cross/hollyhock-3/sdk/newlib/sh-elf
 # Adding a sh4eb-nofpu-elf variant to sh4-elf
 WORKDIR /usr/local/bin
 RUN for f in sh4-elf-* ; do ln -s "$f" "sh4eb-nofpu-elf-"$(echo "$f" | cut -d'-' -f3-) ; done
